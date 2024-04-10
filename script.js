@@ -1,6 +1,8 @@
 let currentValue = '';
 let previousValue = '';
 let operator = ''; 
+let operatorClicked = false;
+let result = 0;
 
 const numbers = document.querySelectorAll('[data-number]')
 const operators = document.querySelectorAll('[data-operator]')
@@ -13,17 +15,27 @@ const previousDisplay = document.querySelector('.previousOperand')
     
 function appendNumber(numValue) {
     currentValue += numValue;
+    currentDisplay.textContent += numValue;
 }
 
 function appendOperator(opValue) {
-    operator = opValue;
-    previousValue = currentValue;
+    if (operatorClicked) {
+        operate();
+        previousValue = result;
+    } else {
+        previousValue = currentValue;
+    }
     currentValue = '';
+    operator = opValue;
+    previousDisplay.textContent = previousValue + operator;
+    currentDisplay.textContent = '';
+    operatorClicked = true;
 }
 
 function appendDecimal () {
     if (!currentValue.includes('.')) {
         currentValue += '.';
+        currentDisplay.textContent = currentValue;
     }
 }
 
@@ -32,6 +44,7 @@ function appendClear () {
     previousDisplay.textContent = '';
     currentValue = '';
     previousValue = '';
+    operatorClicked = false;
 }
 
 function operate() {
@@ -39,37 +52,36 @@ function operate() {
     currentValue = Number(currentValue);
     
     if (operator === '+') {
-        return previousValue += currentValue;
+        result = previousValue + currentValue;
     }
     else if (operator === '-') {
-        return previousValue -= currentValue;
+        result = previousValue - currentValue;
     }
     else if (operator === '*') {
-        return previousValue *= currentValue;
+        result = previousValue * currentValue;
     }
     else if (operator === '/') {
-        return previousValue /= currentValue;
+        result = previousValue / currentValue;
     }
+    result = result.toString();
+    currentDisplay.textContent = result;
+    return result;
 }
 
 numbers.forEach(btn => {
     btn.addEventListener('click', () => {
         appendNumber(btn.textContent);
-        currentDisplay.textContent += btn.textContent;
     })
 })
 
 operators.forEach(op => {
     op.addEventListener('click', () => {
         appendOperator(op.textContent);
-        previousDisplay.textContent = previousValue + operator;
-        currentDisplay.textContent = currentValue;
     })
 })
 
 decimal.addEventListener('click', () => {
     appendDecimal();
-    currentDisplay.textContent = currentValue;
 })
 
 clearall.addEventListener('click', () => {
